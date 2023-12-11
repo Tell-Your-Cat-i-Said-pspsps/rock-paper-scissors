@@ -1,3 +1,25 @@
+const rockBtn =document.querySelector("#rockBtn");
+const paperBtn = document.querySelector("#paperBtn");
+const scissorsBtn = document.querySelector("#scissorsBtn");
+const playerScore = document.querySelector("#playerScore");
+const computerScore = document.querySelector("#computerScore");
+const scoreBoard = document.querySelector("#scoreBoard");
+const resultMsg = document.querySelector("#resultMsg");
+const gameResultModal = document.querySelector('#gameResultModal');
+const restartGame =document.querySelector("#restartGame");
+const modalHeader = document.querySelector("#modal-head");
+const modalText = document.querySelector("#gameResult");
+
+
+
+let roundResult = {
+    computerWinCount : 0,
+    playerWinCount : 0
+}
+
+playerScore.textContent = `Player Score : ${roundResult["playerWinCount"]}`;
+computerScore.textContent = `Computer Score : ${roundResult["computerWinCount"]}`;
+
 function getComputerChoice()
 {
     // get A random number between 0 and 3
@@ -8,81 +30,114 @@ function getComputerChoice()
 
 }
 
-function getPlayerChoice()
-{
-    let playerChoice = prompt("Enter your choice").toLowerCase().trim();
-    if ((playerChoice == "rock" || playerChoice == "paper" || playerChoice == "scissors"))
-    {
-        return playerChoice;
-    }
-    else
-    {
-        playerChoice = getPlayerChoice();
-    }
-    return playerChoice;
-}
-let computerWinCount;
-let playerWinCount;
-
 
 function playRound(playerSelect,computerSelect)
 {
-    if (playerSelect === computerSelect)
+    if (roundResult["playerWinCount"] === 5 || roundResult["computerWinCount"] === 5)
     {
-        console.log("ITS A TIE");
-        return "tie";
-    }
-    else if ((playerSelect === "rock" && computerSelect === "scissors") ||  
-    (playerSelect === "paper" && computerSelect === "rock")||
-    playerSelect === "scissors" && computerSelect === "rock")
-    {
-        console.log(`YOU WIN, ${playerSelect.toUpperCase()} BEATS ${computerSelect.toUpperCase()}`);
-        return "win";
-    }
-    else 
-    {
-        console.log(`YOU LOSE, ${computerSelect.toUpperCase()} BEATS ${playerSelect.toUpperCase()}`);
-        return "lose";
-    }
-}
-function game()
-{
-    let = playerWins = 0;
-    let =computerWins = 0;
-    for ( let i = 0; i < 5; i++)
-    {
-        let result = playRound(getPlayerChoice(),getComputerChoice());
-        while (result === "tie")
-        {
-            result = playRound(getPlayerChoice(),getComputerChoice());
-        }  
-        if (result === "win")
-        {
-            playerWins++;
-            if(playerWins > 2)
-            {
-                return "won";
-            }
-        }
-        else if (result === "lose")
-        {
-            computerWins++;
-            if(computerWins >2)
-            {
-                return "lost";
-            }
-        }
-    }
-    if (playerWins > computerWins)
-    {
-        return "won";
+        endGame();
     }
     else{
-        return "lost";
+
+        let result = '';
+        if (playerSelect === computerSelect)
+        {
+            resultMsg.textContent = "ITS A TIE";
+            result = "tie";
+        }
+        else if ((playerSelect === "rock" && computerSelect === "scissors") ||  
+        (playerSelect === "paper" && computerSelect === "rock")||
+        (playerSelect === "scissors" && computerSelect === "rock"))
+        {
+            resultMsg.textContent =`YOU WIN, ${playerSelect.toUpperCase()} BEATS ${computerSelect.toUpperCase()}`;
+            result = "win";
+        }
+        else 
+        {
+            resultMsg.textContent = `YOU LOSE, ${computerSelect.toUpperCase()} BEATS ${playerSelect.toUpperCase()}`;
+            result = "lose";
+        }
+        updateResult(result);
+        if (roundResult["playerWinCount"] === 5 || roundResult["computerWinCount"] === 5)
+        {
+            endGame();
+        }
+
     }
+
 }
-let gameResult = game();
-console.log(`You ${gameResult} this game!`);
+
+
+// Adding event listener for each choice button
+rockBtn.addEventListener("click",() =>{
+    playRound("rock",getComputerChoice());
+
+});
+paperBtn.addEventListener("click",()=>{
+    playRound("paper",getComputerChoice());
+})
+scissorsBtn.addEventListener("click" , ()=> {
+    playRound('scissors',getComputerChoice());
+})
+
+// update score result on page
+function updateResult (roundScore)
+{
+    if (roundScore === "win")
+    {
+        roundResult["playerWinCount"] +=1;
+    }
+    else if (roundScore === "lose")
+    {
+        roundResult["computerWinCount"] +=1;
+    }
+    playerScore.textContent = `Player Score : ${roundResult["playerWinCount"]}`;
+    computerScore.textContent = `Computer Score : ${roundResult["computerWinCount"]}`;
+
+}
+
+
+function showGameResultModal()
+{
+    gameResultModal.style.display ="flex";
+    if (roundResult["playerWinCount"] === 5)
+    {
+        modalHeader.textContent ="CONGRATULATIONS!";
+        modalText.textContent = "YOU WON!";
+    }
+    else if (roundResult["computerWinCount"] === 5)
+    {
+        modalHeader.textContent ="YOU LOST!";
+        modalText.textContent = "Better luck next time.";
+    }
+    restartGame.addEventListener("click",()=>{
+        roundResult["playerWinCount"] = 0;
+        roundResult["computerWinCount"] = 0;
+        playerScore.textContent = `Player Score : ${roundResult["playerWinCount"]}`;
+        computerScore.textContent = `Computer Score : ${roundResult["computerWinCount"]}`;
+        resultMsg.textContent ='';
+        gameResultModal.style.display ="none";
+    })
+    gameResultModal.style.display ="flex";
+}
+function endGame()
+{
+    rockBtn.removeEventListener("click",() =>{
+        playRound("rock",getComputerChoice());
+    
+    });
+    paperBtn.removeEventListener("click",()=>{
+        playRound("paper",getComputerChoice());
+    })
+    scissorsBtn.removeEventListener("click" , ()=> {
+        playRound('scissors',getComputerChoice());
+    })
+    showGameResultModal()
+}
+
+
+
+
 
 
 
